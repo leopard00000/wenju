@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文具订购</title>
+    <h1> Welcome {{ request.session.username }}!</h1>
+    <style type="text/css">
+        table {
+            align: center;
+            vertical-align: middle;
+        }
+
+        td {
+            align: center;
+            vertical-align: middle;
+        }
+    </style>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+
+        $(function () {
+                    $(".add").click(function () {
+                        var t = $(this).parent().find('input[class*=text_box]');
+                        t.val(parseInt(t.val()) + 1);
+                        setTotal();
+                    })
+                    $(".min").click(function () {
+                        var t = $(this).parent().find('input[class*=text_box]');
+                        t.val(parseInt(t.val()) - 1);
+                        if (parseInt(t.val()) < 0) {
+                            t.val(0);
+                        }
+                        setTotal();
+                    })
+                    function setTotal() {
+                        var s = 0;
+                        $("#tab td").each(function () {
+                            s += parseInt($(this).find('input[class*=text_box]').val()) * parseFloat($(this).find('span[class*=price]').text());
+                        });
+                        $("#total").html(s.toFixed(2));
+                    }
+
+                    setTotal();
+                    var table = $("#table")[0];
+                    var num = table.rows.length;
+                    console.log(num);
+                    var pageSize = 6;
+                    var totalPage = 0;
+                    var currentPage = 1;
+                    if (num / pageSize > parseInt(num / pageSize)) {
+                        totalPage = parseInt(num / pageSize) + 1;
+                    } else {
+                        totalPage = parseInt(num / pageSize);
+                    }
+                    function goPage(pno) {
+                        var startRow = (pno - 1) * pageSize + 1;
+                        var endRow = pno * pageSize;
+                        endRow = (endRow > num) ? num : endRow;
+                        for (var i = 1; i < (num + 1); i++) {
+                            var irow = table.rows[i - 1];
+                            if (i >= startRow && i <= endRow) {
+                                irow.style.display = "inline";
+                            } else {
+                                irow.style.display = "none";
+                            }
+                        }
+                    }
+
+                    var pageEnd = $("#pageEnd")[0];
+                    pageEnd.innerHTML = "<li><a id=\"p0\" href=\"#\" >&laquo;</a></li>";
+{#                    document.getElementById("p0").addEventListener("click", function () {#}
+{#                        alert(1);#}
+{#                    })#}
+                    $("#p0").click(function(){alert(1);})
+                    for (var i = 1; i < (totalPage + 1); i++) {
+                        pageEnd.innerHTML += " <li><a id=" + (i) + " href=\"#\" onClick=\"goPage(" + (i) + ")\">" + i + "</a></li>";
+                    }
+                    pageEnd.innerHTML += "<li><a href=\"#\" onClick=\"goPage(" + (totalPage) + ")\">&raquo;</a></li>";
+                    goPage(1);
+                }
+        )
+    </script>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <form action="{% url 'wenjuApp:order' %}" method="post">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend>Please choose the stationery you need</legend>
+                        {% if stationerys %}
+                            <table id="table" class="table table-striped" style='vertical-align: middle'>
+                                <tbody>
+                                {% for stationery in stationerys %}
+                                    <tr>
+                                        <td>
+                                            <img style="width: 100px;height: 100px"
+                                                 src={{ stationery.photo }} class="img-thumbnail">
+                                        </td>
+                                        <td>
+                                            <a>{{ stationery.name }}</a>
+                                        </td>
+                                        <td>
+                                            ￥{{ stationery.price }}
+                                        </td>
+                                        <td>
+                                            <input class="min" name="" type="button" value="-"/>
+                                            <input class="text_box" name="" style="width:20px;" type="text"
+                                                   value= {{ request.session.itemlist.0 }}>
+                                            <input class="add" name="" type="button" value="+"/>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul id="pageEnd" class="pagination pagination-lg">
+                            </ul><br>
+                            <button type="submit" class="btn">Submit</button>
+                        {% else %}
+                            <p>No stationery are available.</p>
+                        {% endif %}
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'wenjuApp/login.css' %}"/>
+</head>
+<body>
+    <div id="login">
+        <h1>Login</h1>
+        <form action="{% url 'wenjuApp:login'  %}" method="post">
+        {% csrf_token %}
+            {{uf.as_p}}
+            <button class="but" type="submit">登录</button>
+        </form>
+    </div>
+</body>
+</html>
