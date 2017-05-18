@@ -67,15 +67,37 @@
                     }
 
                     var pageEnd = $("#pageEnd")[0];
-                    pageEnd.innerHTML = "<li><a id=\"p0\" href=\"#\" >&laquo;</a></li>";
-{#                    document.getElementById("p0").addEventListener("click", function () {#}
-{#                        alert(1);#}
-{#                    })#}
-                    $("#p0").click(function(){alert(1);})
+                    var li0 = document.createElement("li");
+                    var p0 = document.createElement("a");
+                    p0.innerText = " << ";
+                    li0.appendChild(p0);
+                    pageEnd.appendChild(li0);
+                    p0.addEventListener("click", function () {
+                        goPage(1);
+                    });
+
                     for (var i = 1; i < (totalPage + 1); i++) {
-                        pageEnd.innerHTML += " <li><a id=" + (i) + " href=\"#\" onClick=\"goPage(" + (i) + ")\">" + i + "</a></li>";
+                        (function(e) {
+                            var li = document.createElement("li");
+                            var p = document.createElement("a");
+                            p.innerText = e;
+                            p.addEventListener("click", function () {
+                                goPage(e);
+                            });
+                            li.appendChild(p);
+                            pageEnd.appendChild(li)
+                        })(i)
                     }
-                    pageEnd.innerHTML += "<li><a href=\"#\" onClick=\"goPage(" + (totalPage) + ")\">&raquo;</a></li>";
+
+                    var li1 = document.createElement("li");
+                    var p1 = document.createElement("a");
+                    p1.innerText = " >> ";
+                    li1.appendChild(p1);
+                    pageEnd.appendChild(li1);
+                    p1.addEventListener("click", function () {
+                        goPage(totalPage);
+                    });
+
                     goPage(1);
                 }
         )
@@ -108,8 +130,8 @@
                                         </td>
                                         <td>
                                             <input class="min" name="" type="button" value="-"/>
-                                            <input class="text_box" name="" style="width:20px;" type="text"
-                                                   value= {{ request.session.itemlist.0 }}>
+                                            <input class="text_box" name={{ stationery.id }} style="width:20px;" type="text"
+                                                   value= 0>
                                             <input class="add" name="" type="button" value="+"/>
                                         </td>
                                     </tr>
