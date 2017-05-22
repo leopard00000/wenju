@@ -7,8 +7,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
+from django.db import  transaction
 
-from models import Employee, Stationery
+
+
+from models import Employee, Stationery, Order , Items
 
 
 # Create your views here.
@@ -56,7 +59,7 @@ class IndexView(generic.ListView):
         #
         # except EmptyPage:  # If page is out of range (e.g. 9999), deliver last page of results.
         #     stationerys = self.paginator.page(self.paginator.num_pages)
-        stationery = Stationery.objects.all()
+        stationery = Stationery.objects.all().order_by("id")
 
         return stationery
 
@@ -68,6 +71,16 @@ class IndexView(generic.ListView):
         # context['page_last'] = self.paginator.num_pages
         return context
 
-
+@transaction.commit_on_success
 def order(request):
-    return HttpResponse("OK")
+    orderTemp  = Order(employee= Employee.objects.get(name=request.session['username']))
+    orderTemp.save()
+    for stationery in Stationery.objects.all():
+        if request.POST.get(str(stationery.id)) != '0' :
+            item = Items(stationery=stationery, amount=request.POST[str(stationery.id)],order=orderTemp)
+            item.save()
+
+        # print request.POST.get(str(stationery.id))
+
+
+    return HttpResponse(request.POST.get(str(1)))

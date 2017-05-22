@@ -7,3 +7,5 @@ from django.contrib import admin
 admin.site.register(models.Employee)
 admin.site.register(models.Section)
 admin.site.register(models.Stationery)
+admin.site.register(models.Items)
+admin.site.register(models.Order)
