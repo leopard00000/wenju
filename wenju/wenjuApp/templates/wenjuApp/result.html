@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <h2>Complete!</h2>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <table id="table" class="table table-striped" style='vertical-align: middle'>
+                {% for item in ItemList %}
+                    <tr>
+                        <td>
+                            <img style="width: 100px;height: 100px"
+                                 src={{ item.stationery.photo }} class="img-thumbnail">
+                        </td>
+                        <td>
+                            <a>{{ item.stationery.name }}</a>
+                        </td>
+                        <td>
+                            ￥{{ item.stationery.price }}
+                        </td>
+                        <td>
+                          <a>{{ item.amount}}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <button type="button" class="btn btn-default">Return</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -71,7 +71,7 @@ class IndexView(generic.ListView):
         # context['page_last'] = self.paginator.num_pages
         return context
 
-@transaction.commit_on_success
+@transaction.atomic
 def order(request):
     orderTemp  = Order(employee= Employee.objects.get(name=request.session['username']))
     orderTemp.save()
@@ -81,6 +81,6 @@ def order(request):
             item.save()
 
         # print request.POST.get(str(stationery.id))
+    ItemList = Items.objects.filter(order=orderTemp)
 
-
-    return HttpResponse(request.POST.get(str(1)))
+    return render(request, 'wenjuApp/result.html', {'ItemList': ItemList})
