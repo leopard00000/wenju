@@ -100,7 +100,12 @@
 
                     goPage(1);
                 }
+
         )
+          function sb1(){
+                    alert("test")
+                    return false
+                }
     </script>
     <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -109,7 +114,7 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
-                <form action="{% url 'wenjuApp:order' %}" method="post">
+                <form action="{% url 'wenjuApp:order' %}" method="post" onsubmit="return sb1();">
                     {% csrf_token %}
                     <fieldset>
                         <legend>Please choose the stationery you need</legend>

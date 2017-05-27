@@ -73,6 +73,7 @@ class IndexView(generic.ListView):
 
 @transaction.atomic
 def order(request):
+    #这里添加验证 不能全是0 网页上也要验证
     orderTemp  = Order(employee= Employee.objects.get(name=request.session['username']))
     orderTemp.save()
     for stationery in Stationery.objects.all():
