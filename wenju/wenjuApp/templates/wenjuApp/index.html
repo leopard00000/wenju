@@ -19,93 +19,109 @@
     <script>
 
         $(function () {
-                    $(".add").click(function () {
-                        var t = $(this).parent().find('input[class*=text_box]');
-                        t.val(parseInt(t.val()) + 1);
-                        setTotal();
-                    })
-                    $(".min").click(function () {
-                        var t = $(this).parent().find('input[class*=text_box]');
-                        t.val(parseInt(t.val()) - 1);
-                        if (parseInt(t.val()) < 0) {
-                            t.val(0);
-                        }
-                        setTotal();
-                    })
-                    function setTotal() {
-                        var s = 0;
-                        $("#tab td").each(function () {
-                            s += parseInt($(this).find('input[class*=text_box]').val()) * parseFloat($(this).find('span[class*=price]').text());
-                        });
-                        $("#total").html(s.toFixed(2));
-                    }
-
+                $(".add").click(function () {
+                    var t = $(this).parent().find('input[class*=text_box]');
+                    t.val(parseInt(t.val()) + 1);
                     setTotal();
-                    var table = $("#table")[0];
-                    var num = table.rows.length;
-                    console.log(num);
-                    var pageSize = 6;
-                    var totalPage = 0;
-                    var currentPage = 1;
-                    if (num / pageSize > parseInt(num / pageSize)) {
-                        totalPage = parseInt(num / pageSize) + 1;
-                    } else {
-                        totalPage = parseInt(num / pageSize);
+                })
+                $(".min").click(function () {
+                    var t = $(this).parent().find('input[class*=text_box]');
+                    t.val(parseInt(t.val()) - 1);
+                    if (parseInt(t.val()) < 0) {
+                        t.val(0);
                     }
-                    function goPage(pno) {
-                        var startRow = (pno - 1) * pageSize + 1;
-                        var endRow = pno * pageSize;
-                        endRow = (endRow > num) ? num : endRow;
-                        for (var i = 1; i < (num + 1); i++) {
-                            var irow = table.rows[i - 1];
-                            if (i >= startRow && i <= endRow) {
-                                irow.style.display = "inline";
-                            } else {
-                                irow.style.display = "none";
-                            }
-                        }
-                    }
-
-                    var pageEnd = $("#pageEnd")[0];
-                    var li0 = document.createElement("li");
-                    var p0 = document.createElement("a");
-                    p0.innerText = " << ";
-                    li0.appendChild(p0);
-                    pageEnd.appendChild(li0);
-                    p0.addEventListener("click", function () {
-                        goPage(1);
+                    setTotal();
+                })
+                function setTotal() {
+                    var s = 0;
+                    $("#tab td").each(function () {
+                        s += parseInt($(this).find('input[class*=text_box]').val()) * parseFloat($(this).find('span[class*=price]').text());
                     });
-
-                    for (var i = 1; i < (totalPage + 1); i++) {
-                        (function(e) {
-                            var li = document.createElement("li");
-                            var p = document.createElement("a");
-                            p.innerText = e;
-                            p.addEventListener("click", function () {
-                                goPage(e);
-                            });
-                            li.appendChild(p);
-                            pageEnd.appendChild(li)
-                        })(i)
-                    }
-
-                    var li1 = document.createElement("li");
-                    var p1 = document.createElement("a");
-                    p1.innerText = " >> ";
-                    li1.appendChild(p1);
-                    pageEnd.appendChild(li1);
-                    p1.addEventListener("click", function () {
-                        goPage(totalPage);
-                    });
-
-                    goPage(1);
+                    $("#total").html(s.toFixed(2));
                 }
 
-        )
-          function sb1(){
-                    alert("test")
+                setTotal();
+                var table = $("#table")[0];
+                var num = table.rows.length;
+                console.log(num);
+                var pageSize = 6;
+                var totalPage = 0;
+                var currentPage = 1;
+                if (num / pageSize > parseInt(num / pageSize)) {
+                    totalPage = parseInt(num / pageSize) + 1;
+                } else {
+                    totalPage = parseInt(num / pageSize);
+                }
+                function goPage(pno) {
+                    var startRow = (pno - 1) * pageSize + 1;
+                    var endRow = pno * pageSize;
+                    endRow = (endRow > num) ? num : endRow;
+                    for (var i = 1; i < (num + 1); i++) {
+                        var irow = table.rows[i - 1];
+                        if (i >= startRow && i <= endRow) {
+                            irow.style.display = "inline";
+                        } else {
+                            irow.style.display = "none";
+                        }
+                    }
+                }
+
+                var pageEnd = $("#pageEnd")[0];
+                var li0 = document.createElement("li");
+                var p0 = document.createElement("a");
+                p0.innerText = " << ";
+                li0.appendChild(p0);
+                pageEnd.appendChild(li0);
+                p0.addEventListener("click", function () {
+                    goPage(1);
+                });
+
+                for (var i = 1; i < (totalPage + 1); i++) {
+                    (function (e) {
+                        var li = document.createElement("li");
+                        var p = document.createElement("a");
+                        p.innerText = e;
+                        p.addEventListener("click", function () {
+                            goPage(e);
+                        });
+                        li.appendChild(p);
+                        pageEnd.appendChild(li)
+                    })(i)
+                }
+
+                var li1 = document.createElement("li");
+                var p1 = document.createElement("a");
+                p1.innerText = " >> ";
+                li1.appendChild(p1);
+                pageEnd.appendChild(li1);
+                p1.addEventListener("click", function () {
+                    goPage(totalPage);
+                });
+
+
+                goPage(1);
+                function sb1(form) {
+                    var re = /^[0-9]+[0-9]*]*$/;
+                    for (var i = 1; i <= {{request.session.len}}; i++) {
+                        {#                if (!re.test(form.i.val())) {#}
+                        {#                    alert("Please type in a number!")#}
+                        {#                    alert(form.i.val())#}
+                        {#                    return false#}
+                        {#                }#}
+                        alert(form.i.val())
+                    }
+                    {#            var re2 = /^[1-9]+[0-9]*]*$/;#}
+                    {#            for (var i = 1; i <= {{request.session.len}}; i++) {#}
+                    {#                if (re2.test(form.i.val())) {#}
+                    {#                    return true#}
+                    {#                }#}
+                    {#            }#}
+                    alert("You did not choose anything!")
                     return false
                 }
+            }
+        )
+
     </script>
     <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -114,7 +130,7 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
-                <form action="{% url 'wenjuApp:order' %}" method="post" onsubmit="return sb1();">
+                <form action="{% url 'wenjuApp:order' %}" method="post" onsubmit="return sb1(this);">
                     {% csrf_token %}
                     <fieldset>
                         <legend>Please choose the stationery you need</legend>
@@ -135,8 +151,9 @@
                                         </td>
                                         <td>
                                             <input class="min" name="" type="button" value="-"/>
-                                            <input class="text_box" name={{ stationery.id}} style="width:20px;" type="text"
-                                                   value= 0>
+                                            <input class="text_box" name={{ stationery.id }} style="width:20px;"
+                                                   type="text"
+                                                   value=0>
                                             <input class="add" name="" type="button" value="+"/>
                                         </td>
                                     </tr>

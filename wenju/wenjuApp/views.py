@@ -32,6 +32,7 @@ def login(request):
             if user:
                 response = HttpResponseRedirect(reverse('wenjuApp:index'))
                 request.session['username'] = username
+                request.session['len'] =  Stationery.objects.all().__len__()
                 request.session['itemlist'] = [0]*Stationery.objects.all().__len__()
                 return response
             else:
@@ -60,6 +61,7 @@ class IndexView(generic.ListView):
         # except EmptyPage:  # If page is out of range (e.g. 9999), deliver last page of results.
         #     stationerys = self.paginator.page(self.paginator.num_pages)
         stationery = Stationery.objects.all().order_by("id")
+
 
         return stationery
 
