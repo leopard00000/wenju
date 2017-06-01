@@ -100,27 +100,47 @@
 
 
                 goPage(1);
-                function sb1(form) {
+
+                var btn = $("#btn")[0];
+                btn.addEventListener("click", function () {
+                    sendForm();
+                });
+                var form = $("#form")[0];
+
+                function checkPost() {
                     var re = /^[0-9]+[0-9]*]*$/;
-                    for (var i = 1; i <= {{request.session.len}}; i++) {
-                        {#                if (!re.test(form.i.val())) {#}
-                        {#                    alert("Please type in a number!")#}
-                        {#                    alert(form.i.val())#}
-                        {#                    return false#}
-                        {#                }#}
-                        alert(form.i.val())
+                    var flag = 0;
+                    var flag2 = 1;
+                    $(".text_box").each(function () {
+                        if (!re.test($(this).val())) {
+                            alert("Please type in number!");
+                            flag2 = 0;
+                        }
+                        if ($(this).val() != '0') {
+                            flag = 1;
+                        }
+                    })
+                    if (flag2 == 1) {
+                        if (flag == 1) {
+                            return true;
+                        }
+                        else {
+                            alert("You did not choose anything!");
+                            return false;
+                        }
                     }
-                    {#            var re2 = /^[1-9]+[0-9]*]*$/;#}
-                    {#            for (var i = 1; i <= {{request.session.len}}; i++) {#}
-                    {#                if (re2.test(form.i.val())) {#}
-                    {#                    return true#}
-                    {#                }#}
-                    {#            }#}
-                    alert("You did not choose anything!")
-                    return false
+                    return false;
                 }
+
+                function sendForm() {
+                    if (checkPost()) {
+                        form.submit();
+                    }
+                }
+
             }
         )
+
 
     </script>
     <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -130,7 +150,7 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
-                <form action="{% url 'wenjuApp:order' %}" method="post" onsubmit="return sb1(this);">
+                <form id="form" action="{% url 'wenjuApp:order' %}" method="post">
                     {% csrf_token %}
                     <fieldset>
                         <legend>Please choose the stationery you need</legend>
@@ -162,7 +182,7 @@
                             </table>
                             <ul id="pageEnd" class="pagination pagination-lg">
                             </ul><br>
-                            <button type="submit" class="btn">Submit</button>
+                            <button id="btn" type="button" class="btn">Submit</button>
                         {% else %}
                             <p>No stationery are available.</p>
                         {% endif %}

@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
 from django.db import  transaction
+import  xlwt
 
 
 
@@ -87,3 +88,29 @@ def order(request):
     ItemList = Items.objects.filter(order=orderTemp)
 
     return render(request, 'wenjuApp/result.html', {'ItemList': ItemList})
+
+
+def exportAgencyCustomers(request):
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;filename=export_agencycustomer.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+    sheet = wb.add_sheet(u'订单')
+    # 1st line
+    sheet.write(0, 0, '经销商编码')
+    sheet.write(0, 1, '经销商名称')
+    sheet.write(0, 2, '终端医院编码')
+    sheet.write(0, 3, '终端医院名称')
+
+    row = 1
+    for agencycustomer in AgencyCustomer.objects.all():
+        sheet.write(row, 0, agencycustomer.agency.cCusCode)
+        sheet.write(row, 1, agencycustomer.agency.cCusName)
+        sheet.write(row, 2, agencycustomer.cCusCode)
+        sheet.write(row, 3, agencycustomer.cCusName)
+        row = row + 1
+
+    output = StringIO.StringIO()
+    wb.save(output)
+    output.seek(0)
+    response.write(output.getvalue())
+    return response
