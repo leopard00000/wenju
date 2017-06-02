@@ -7,12 +7,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
-from django.db import  transaction
-import  xlwt
+from django.db import transaction
+import xlwt, StringIO
+from datetime import datetime, tzinfo, timedelta
 
-
-
-from models import Employee, Stationery, Order , Items
+from models import Employee, Stationery, Order, Items
 
 
 # Create your views here.
@@ -21,6 +20,22 @@ from models import Employee, Stationery, Order , Items
 class UserForm(forms.Form):
     username = forms.CharField(label='用户名', max_length=100)
     password = forms.CharField(label='密码', widget=forms.PasswordInput())
+
+
+class UTC(tzinfo):
+    """UTC"""
+
+    def __init__(self, offset=0):
+        self._offset = offset
+
+    def utcoffset(self, dt):
+        return timedelta(hours=self._offset)
+
+    def tzname(self, dt):
+        return "UTC +%s" % self._offset
+
+    def dst(self, dt):
+        return timedelta(hours=self._offset)
 
 
 def login(request):
@@ -33,8 +48,8 @@ def login(request):
             if user:
                 response = HttpResponseRedirect(reverse('wenjuApp:index'))
                 request.session['username'] = username
-                request.session['len'] =  Stationery.objects.all().__len__()
-                request.session['itemlist'] = [0]*Stationery.objects.all().__len__()
+                request.session['len'] = Stationery.objects.all().__len__()
+                request.session['itemlist'] = [0] * Stationery.objects.all().__len__()
                 return response
             else:
                 return HttpResponseRedirect(reverse('wenjuApp:login'))
@@ -44,13 +59,13 @@ def login(request):
 
 
 class IndexView(generic.ListView):
-
     template_name = 'wenjuApp/index.html'
     context_object_name = 'stationerys'
+
     # paginator = Paginator(Stationery.objects.all(), 6)
 
     def get_queryset(self):
-        #self.request.session.itemlist[]
+        # self.request.session.itemlist[]
         # page = self.request.GET.get('page')
 
         # try:
@@ -63,9 +78,7 @@ class IndexView(generic.ListView):
         #     stationerys = self.paginator.page(self.paginator.num_pages)
         stationery = Stationery.objects.all().order_by("id")
 
-
         return stationery
-
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data()
@@ -74,39 +87,43 @@ class IndexView(generic.ListView):
         # context['page_last'] = self.paginator.num_pages
         return context
 
+
 @transaction.atomic
 def order(request):
-    #这里添加验证 不能全是0 网页上也要验证
-    orderTemp  = Order(employee= Employee.objects.get(name=request.session['username']))
+    # 这里添加验证 不能全是0 网页上也要验证
+    orderTemp = Order(employee=Employee.objects.get(name=request.session['username']))
     orderTemp.save()
     for stationery in Stationery.objects.all():
-        if request.POST.get(str(stationery.id)) != '0' :
-            item = Items(stationery=stationery, amount=request.POST[str(stationery.id)],order=orderTemp)
+        if request.POST.get(str(stationery.id)) != '0':
+            item = Items(stationery=stationery, amount=request.POST[str(stationery.id)], order=orderTemp)
             item.save()
 
-        # print request.POST.get(str(stationery.id))
+            # print request.POST.get(str(stationery.id))
     ItemList = Items.objects.filter(order=orderTemp)
 
     return render(request, 'wenjuApp/result.html', {'ItemList': ItemList})
 
 
-def exportAgencyCustomers(request):
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment;filename=export_agencycustomer.xls'
+def exportStationeryOrder(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;filename=export_stationerys.xls'
     wb = xlwt.Workbook(encoding='utf-8')
-    sheet = wb.add_sheet(u'订单')
+    sheet = wb.add_sheet(u'文具订单')
     # 1st line
-    sheet.write(0, 0, '经销商编码')
-    sheet.write(0, 1, '经销商名称')
-    sheet.write(0, 2, '终端医院编码')
-    sheet.write(0, 3, '终端医院名称')
+    sheet.write(0, 0, 'Stationery')
+    sheet.write(0, 1, 'Amount')
+    sheet.write(0, 2, 'Employee')
+    sheet.write(0, 3, 'Section')
+    sheet.write(0, 4, 'Date')
 
     row = 1
-    for agencycustomer in AgencyCustomer.objects.all():
-        sheet.write(row, 0, agencycustomer.agency.cCusCode)
-        sheet.write(row, 1, agencycustomer.agency.cCusName)
-        sheet.write(row, 2, agencycustomer.cCusCode)
-        sheet.write(row, 3, agencycustomer.cCusName)
+    for item in Items.objects.all():
+        sheet.write(row, 0, item.stationery.name)
+        sheet.write(row, 1, item.amount)
+        sheet.write(row, 2, item.order.employee.name)
+        sheet.write(row, 3, item.order.employee.section.name)
+        date = item.order.pub_date
+        sheet.write(row, 4, date.year.__str__() + "-" + date.month.__str__() + "-" + date.day.__str__())
         row = row + 1
 
     output = StringIO.StringIO()

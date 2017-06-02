@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^index/$', views.IndexView.as_view(), name='index'),
     url(r'^order/$', views.order, name='order'),
+    url(r'^exportOrder/$', views.exportStationeryOrder, name='export'),
 ]
