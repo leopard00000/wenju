@@ -15,12 +15,13 @@ class Employee(models.Model):
     name = models.CharField(max_length=200)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     password = models.CharField(max_length=20)
+    month_flag = models.BooleanField(default=True)
 
 
 class Stationery(models.Model):
     name = models.CharField(max_length=200)
     price = models.CharField(max_length=10)
-    photo = models.CharField(max_length=200) #path
+    photo = models.CharField(max_length=200)  # path
 
 
 class Order(models.Model):
